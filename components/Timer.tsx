@@ -2,8 +2,8 @@
 
 import { useEffect, useState, useRef } from "react";
 
-const WORK_DURATION = 0.5 * 60;
-const BREAK_DURATION = 0.25 * 60;
+const WORK_DURATION = 25 * 60;
+const BREAK_DURATION = 5 * 60;
 
 export default function Timer() {
   const [secondsLeft, setSecondsLeft] = useState(WORK_DURATION);

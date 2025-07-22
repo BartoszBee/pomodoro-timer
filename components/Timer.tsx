@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-
-const WORK_DURATION = 25 * 60;
-const BREAK_DURATION = 5 * 60;
+import { useEffect, useRef, useState } from "react";
+import SettingsModal from "./SettingsModal";
+import ModeToggleButton from "./ModeToggleButton";
 
 export default function Timer() {
-  const [secondsLeft, setSecondsLeft] = useState(WORK_DURATION);
+  const [workTime, setWorkTime] = useState(25);
+  const [breakTime, setBreakTime] = useState(5);
+  const [secondsLeft, setSecondsLeft] = useState(workTime * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [isSoundOn, setIsSoundOn] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
 
   const alarm = useRef<HTMLAudioElement | null>(null);
 
@@ -24,12 +26,10 @@ export default function Timer() {
       setSecondsLeft((prev) => {
         if (prev === 1) {
           clearInterval(interval);
-
           const nextIsBreak = !isBreak;
           setIsBreak(nextIsBreak);
           setIsRunning(false);
 
-          // 🔔 Odtwórz dźwięk jeśli włączony
           if (isSoundOn && alarm.current) {
             alarm.current.currentTime = 0;
             alarm.current.play().catch((e) =>
@@ -37,28 +37,21 @@ export default function Timer() {
             );
           }
 
-          return nextIsBreak ? BREAK_DURATION : WORK_DURATION;
+          return nextIsBreak ? breakTime * 60 : workTime * 60;
         }
-
         return prev - 1;
       });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isRunning, isBreak, isSoundOn]);
+  }, [isRunning, isBreak, isSoundOn, workTime, breakTime]);
 
-  const minutes = Math.floor(secondsLeft / 60)
-    .toString()
-    .padStart(2, "0");
+  const minutes = Math.floor(secondsLeft / 60).toString().padStart(2, "0");
   const seconds = (secondsLeft % 60).toString().padStart(2, "0");
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="text-6xl font-mono mb-4">
-        {minutes}:{seconds}
-      </div>
-
-      {/* 🔊 Przycisk przełączania dźwięku */}
+    <div className="flex flex-col items-center justify-center min-h-screen relative px-4">
+      {/* 🔊 Przycisk dźwięku */}
       <button
         onClick={() => setIsSoundOn((prev) => !prev)}
         className="mb-4 text-2xl"
@@ -67,6 +60,15 @@ export default function Timer() {
         {isSoundOn ? "🔊" : "🔇"}
       </button>
 
+      {/* 🧠 Nagłówek */}
+      <h1 className="text-4xl font-bold mb-6">Pomodoro Timer</h1>
+
+      {/* 🕒 Zegar */}
+      <div className="text-6xl font-mono mb-4">
+        {minutes}:{seconds}
+      </div>
+
+      {/* 🎮 Kontrola czasu */}
       <div className="space-x-4">
         <button
           className="px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded cursor-pointer"
@@ -84,13 +86,14 @@ export default function Timer() {
           className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded cursor-pointer"
           onClick={() => {
             setIsRunning(false);
-            setSecondsLeft(isBreak ? BREAK_DURATION : WORK_DURATION);
+            setSecondsLeft(isBreak ? breakTime * 60 : workTime * 60);
           }}
         >
           Reset
         </button>
       </div>
 
+      {/* 🧾 Status */}
       <div
         className={`mt-8 px-4 py-2 rounded-full border-2 font-bold text-xl text-black w-full text-center ${
           isBreak ? "border-red-600" : "bg-green-500"
@@ -98,6 +101,39 @@ export default function Timer() {
       >
         {isBreak ? "Przerwa" : "Praca"}
       </div>
+
+      {/* 🧭 Przyciski na dole */}
+      <div className="mt-12 flex gap-3">
+        <button
+          onClick={() => setShowSettings(true)}
+          className="text-xs px-3 py-1 bg-white/70 hover:bg-white text-blue-600 border border-blue-300 rounded-md shadow-sm transition"
+        >
+          ⚙️ Zmień ustawienia
+        </button>
+
+        <ModeToggleButton
+          isBreak={isBreak}
+          onToggle={() => {
+            setIsBreak(!isBreak);
+            setIsRunning(false);
+            setSecondsLeft(!isBreak ? breakTime * 60 : workTime * 60);
+          }}
+        />
+      </div>
+
+      {/* ⚙️ Modal ustawień */}
+      <SettingsModal
+        show={showSettings}
+        workTime={workTime}
+        breakTime={breakTime}
+        onChangeWork={setWorkTime}
+        onChangeBreak={setBreakTime}
+        onClose={() => setShowSettings(false)}
+        onSave={() => {
+          setShowSettings(false);
+          setSecondsLeft(isBreak ? breakTime * 60 : workTime * 60);
+        }}
+      />
     </div>
   );
 }

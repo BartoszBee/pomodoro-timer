@@ -32,9 +32,11 @@ export default function Timer() {
 
           if (isSoundOn && alarm.current) {
             alarm.current.currentTime = 0;
-            alarm.current.play().catch((e) =>
-              console.warn("Nie udało się odtworzyć dźwięku:", e)
-            );
+            alarm.current
+              .play()
+              .catch((e) =>
+                console.warn("Nie udało się odtworzyć dźwięku:", e)
+              );
           }
 
           return nextIsBreak ? breakTime * 60 : workTime * 60;
@@ -46,7 +48,9 @@ export default function Timer() {
     return () => clearInterval(interval);
   }, [isRunning, isBreak, isSoundOn, workTime, breakTime]);
 
-  const minutes = Math.floor(secondsLeft / 60).toString().padStart(2, "0");
+  const minutes = Math.floor(secondsLeft / 60)
+    .toString()
+    .padStart(2, "0");
   const seconds = (secondsLeft % 60).toString().padStart(2, "0");
 
   return (
@@ -106,9 +110,9 @@ export default function Timer() {
       <div className="mt-12 flex gap-3">
         <button
           onClick={() => setShowSettings(true)}
-          className="text-xs px-3 py-1 bg-white/70 hover:bg-white text-blue-600 border border-blue-300 rounded-md shadow-sm transition"
+          className="text-xs px-3 py-1 cursor-pointer text-blue-500 border border-blue-500 hover:bg-gray-200/70 rounded-md shadow-sm transition"
         >
-          ⚙️ Zmień ustawienia
+          Zmień ustawienia
         </button>
 
         <ModeToggleButton

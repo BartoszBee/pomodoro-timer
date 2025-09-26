@@ -5,13 +5,16 @@ type ModeToggleButtonProps = {
   onToggle: () => void;
 };
 
-export default function ModeToggleButton({ isBreak, onToggle }: ModeToggleButtonProps) {
+export default function ModeToggleButton({
+  isBreak,
+  onToggle,
+}: ModeToggleButtonProps) {
   return (
     <button
       onClick={onToggle}
-      className="text-xs px-3 py-1 bg-white/70 hover:bg-white text-purple-600 border border-purple-300 rounded-md shadow-sm transition"
+      className="text-xs px-3 py-1 bg-blue-400 hover:bg-blue-500 text-white  rounded-md shadow-sm transition cursor-pointer"
     >
-      🔁 Przełącz na {isBreak ? "pracę" : "przerwę"}
+      Przełącz na {isBreak ? "pracę" : "przerwę"}
     </button>
   );
 }

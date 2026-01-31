@@ -31,10 +31,10 @@ export default function Timer() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen relative px-4">
+    <div className="flex flex-col items-center flex-start min-h-screen relative px-4">
       <button
         onClick={toggleSound}
-        className="mb-4 text-2xl"
+        className="mb-4 text-2xl cursor-pointer"
         aria-label={isSoundOn ? "Wyłącz dźwięk" : "Włącz dźwięk"}
       >
         {isSoundOn ? "🔊" : "🔇"}

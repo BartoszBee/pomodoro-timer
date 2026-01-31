@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+
 type SettingsModalProps = {
   show: boolean;
   workTime: number;
@@ -19,16 +21,47 @@ export default function SettingsModal({
   onClose,
   onSave,
 }: SettingsModalProps) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!show) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [show, onClose]);
+
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-80 shadow-lg">
-        <h2 className="text-xl font-bold mb-4">Ustawienia</h2>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="settings-modal-title"
+        className="bg-white rounded-lg p-6 w-80 shadow-lg"
+      >
+        <h2 id="settings-modal-title" className="text-xl font-bold mb-4">
+          Ustawienia
+        </h2>
 
-        <label className="block mb-2">
+        <label htmlFor="work-time-input" className="block mb-2">
           Czas pracy (min):
           <input
+            id="work-time-input"
             type="number"
             min={1}
             value={workTime}
@@ -37,9 +70,10 @@ export default function SettingsModal({
           />
         </label>
 
-        <label className="block mb-4">
+        <label htmlFor="break-time-input" className="block mb-4">
           Czas przerwy (min):
           <input
+            id="break-time-input"
             type="number"
             min={1}
             value={breakTime}
@@ -52,12 +86,14 @@ export default function SettingsModal({
           <button
             onClick={onSave}
             className="px-4 py-2 bg-blue-500 text-white rounded"
+            aria-label="Zapisz ustawienia"
           >
             Zapisz
           </button>
           <button
             onClick={onClose}
             className="px-4 py-2 bg-gray-300 rounded"
+            aria-label="Anuluj i zamknij ustawienia"
           >
             Anuluj
           </button>

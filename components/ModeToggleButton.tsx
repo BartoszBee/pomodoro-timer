@@ -13,6 +13,11 @@ export default function ModeToggleButton({
     <button
       onClick={onToggle}
       className="text-xs px-3 py-1 bg-blue-400 hover:bg-blue-500 text-white  rounded-md shadow-sm transition cursor-pointer"
+      aria-label={
+        isBreak
+          ? "Przełącz na tryb pracy (obecnie przerwa)"
+          : "Przełącz na tryb przerwy (obecnie praca)"
+      }
     >
       Przełącz na {isBreak ? "pracę" : "przerwę"}
     </button>
